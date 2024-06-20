@@ -1,0 +1,184 @@
+<div >
+  <h1 style="text-align: center;" >Users </h1>
+  
+</div>
+<div *ngIf="message" class="alert alert-success">
+  {{message}}
+</div>
+
+<div class="mt-4">
+  <form enctype="multipart/form-data" #users="ngForm" (ngSubmit)=" users.form.valid && addUser()">
+      <div class="mb-3">
+        <b><label for="uprofile" class="form-label">User Profile</label></b>
+        <input type="file" class="form-control" id="uprofile" name="uprofile" ngModel #uprofile="ngModel"
+          (change)="onFileChange($event)">
+      </div>
+      <small *ngIf="fileSizeMessage" class="text-danger">
+        {{fileSizeMessage}}
+      </small>
+      <div class="mb-3">
+      <b><label for="uname" class="form-label">User Name</label></b>
+      <input type="text" class="form-control" id="uname" placeholder="Name" [(ngModel)]="form.uname" name="uname"
+        #uname="ngModel">
+    </div>
+    <div class="mb-3">
+      <b><label for="uemail" class="form-label">User Email</label></b>
+      <input type="email" class="form-control" id="uemail" placeholder="Email" [(ngModel)]="form.uemail" name="uemail"
+        #uemail="ngModel" required (focus)="clearErrors()" email>
+    </div>
+
+    <small *ngIf="emailExists" class="text-danger">{{emailExists}}</small>
+    <small *ngIf="uemail.errors && (uemail.dirty || uemail.touched)">
+      <small *ngIf="uemail.errors['required']" class="text-danger">
+        Email is required.
+      </small>
+      <small *ngIf="uemail.errors['email']" class="text-danger">
+        Invalid email format.
+      </small>
+    </small>
+ 
+    <div class="mb-3">
+      <label for="unumber" class="form-label">Phone Number</label>
+      <div class="input-group">
+        <select class="form-control" id="countryCode" [(ngModel)]="selectedCountryCode" name="countryCode" (change)="onCountryCodeChange()">
+          <option *ngIf="!isEdit" value="" disabled selected>Select a Country Code</option>
+          <option *ngIf="isEdit" value=""  selected [value]="selectedCountryCode">{{selectedCountryCode}}</option>
+          <option *ngFor="let code of countryCodes" [value]="code">{{ code }}</option>
+        </select>
+        <input type="text" class="form-control" id="unumber" placeholder="Number" [(ngModel)]="form.unumber"
+          name="unumber" #unumber="ngModel" required (focus)="clearErrors()"  pattern="^\d{10}$">
+      </div>
+    </div>
+    <small *ngIf="unumber.errors && (unumber.dirty || unumber.touched)">
+      <small *ngIf="unumber.errors['required']" class="text-danger">
+        Number is required.
+      </small>
+      <small *ngIf="unumber.errors['pattern']" class="text-danger">
+        Invalid Phone  Number format.
+      </small>
+    </small>
+    <small *ngIf="numberExists !== '' && numberExists" class="text-danger">{{numberExists}}</small>
+    <div class="mb-3" *ngIf="isEdit">
+      <button type="submit" class="btn btn-success" [disabled]="users.form.status==='INVALID'">
+        Edit</button>
+    </div>
+    <div class="mb-3" *ngIf="!isEdit">
+      <button type="submit" class="btn btn-success" [disabled]="users.form.status==='INVALID'">
+        Add</button>
+    </div>
+  </form>
+</div>
+
+  <div class="row ">
+    <form method="get" class="mt-2 col-10 d-flex"  #searchForm="ngForm" (ngSubmit)="onSearch(searchText)">
+      <input type="text" style="width: 300px;" placeholder="Search by Name, Email, Number" name="search"  [(ngModel)]="searchText" class="form-control">
+      <input type="submit" value="Search" class="btn btn-primary">
+      <button  class="btn btn-danger" type="button" (click)="resetForm(searchForm)">Reset</button>
+    </form>
+  
+    <form class="mt-2 col-10 d-flex"  #resetSortForm="ngForm" >
+    <select class="form-control bg-primary col-2 " style="width: 150px;height :45px;" [(ngModel)]="sortText" (change)="handleSort($event)" name="sort">
+      <option class="bg-white" value="" disabled selected>Sort</option>
+      <option class="bg-white" value="uname">Name</option>
+      <option class="bg-white" value="uemail">Email</option>
+      <option class="bg-white" value="unumber">Number</option>
+    </select>
+    <button  class="btn btn-danger" type="button" (click)="resetSort(resetSortForm)">Reset</button>
+  </form> 
+  </div>
+  
+<div class="alert alert-danger mt-2" *ngIf="searchMessage">
+{{searchMessage}}</div>
+
+    <div class="mt-3">
+      <h2 style="text-align: center;">Users List</h2>
+      <table class="table table-hover">
+        <caption></caption>
+        <tr>
+          <th>Profile</th>
+          <th>Name</th>
+          <th>Email</th>
+          <th>Number</th>
+          <th colspan="2">Operations</th>
+        </tr>
+        <tr *ngFor="let user of UsersList; let i= index">
+          <img [src]="'http://localhost:8000/assets/uprofile/' + user.uprofile" alt="User Profile"
+            style="max-width: 100px; max-height: 100px;" class="img-thumbnail">
+          <td>{{ user.uname }}</td>
+          <td>{{ user.uemail }}</td>
+          <td>{{user.unumber }}</td>
+          <td>
+            <select class="form-control bg-primary" #actionSelect (change)="handleAction(user, $event, i)">
+              <option class="bg-white" value="" disabled selected>Actions</option>
+              <option class="bg-white" value="edit">Edit</option>
+              <option class="bg-white" value="delete">Delete</option>
+              <option class="bg-white" value="card">Card</option>
+            </select>           
+          </td>
+        </tr>
+      </table>
+      <div id="cardElement"></div>
+      <div class="row"  *ngIf="UsersList.length > 0">
+    <div class="col-5">
+      <button class="btn btn-success w-auto" (click)="prevPage()" [disabled]="currentPage <= 1">Previous</button>
+    </div>
+    <span class="col-2">Page {{currentPage}} of {{totalPages}}</span>
+    <div class="col-5 text-end">
+      <button class="btn btn-success w-auto" (click)="nextPage()" [disabled]="currentPage >= totalPages">Next</button>
+    </div>
+  </div>
+    </div>
+
+    <div id="action_modal" class="modal" tabindex="-1" #action_modal role="dialog">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+  
+            <div class="modal-header" id="title">
+              <h1 class="modal-title">Card Details</h1>
+            </div>
+            <div class="modal-body">
+              <table class="table table-hover">
+                <thead>
+                  <tr>
+                    <th>Brand</th>
+                    <th>Last 4 Digits</th>
+                    <th>Action</th>
+                    <th>Default</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let card of cards" >
+                    <td>{{ card.brand }}</td>
+                    <td>{{ card.last4 }}</td>
+        
+                    <td>
+                      <a (click)="deleteCard(card._id, card.userId)">
+                        <i class="fa fa-trash" style="color: red; font-size: 22px;"></i>
+                      </a>
+                    </td>
+                    <td>
+                      <a *ngIf="!card.default" (click)="selectDefaultCard(card)">Set
+                      </a>
+                      <a *ngIf="card.default">
+                        <i class="fa fa-star" style="color: gold; font-size: 18px;"></i>
+                      </a>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+              <div class="modal-footer">
+                <div class="mt-2">
+                  <button type="submit" class="btn btn-success" data-bs-dismiss="modal" (click)="addCard()">
+                    Add Card
+                  </button>
+                </div>
+                <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+              </div>
+    </div>
+        </div>
+      </div>
+    </div>
+
+
+
+

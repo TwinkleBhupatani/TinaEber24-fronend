@@ -1,0 +1,175 @@
+<h1 style="text-align: center;">Confirmed Rides List</h1>
+<!-- <span >Counter={{counters}}</span> -->
+<div *ngIf="message" class="alert alert-success">
+  {{message}}
+</div>
+<div *ngIf="notAcceptedRejecetedMessage && !nearest"  class="alert alert-danger">
+  {{notAcceptedRejecetedMessage}}
+</div>
+<div *ngIf="acceptedMessage" class="alert alert-success">
+  {{acceptedMessage}}
+</div>
+<div *ngIf="rejectedMessage" class="alert alert-danger">
+  {{rejectedMessage}}
+</div>
+<div *ngIf="same" class="alert alert-danger">
+  {{same}}
+</div>
+<div style="text-align: center;"><b>Search By:</b></div>
+<form method="get" class="mt-2 col-10 d-flex" #searchForm="ngForm"
+  (ngSubmit)="onSearch(searchByType,searchByName, searchByNumber, searchById, searchByDate)">
+  <input type="text" style="width: 100px;" placeholder="Type" name="search" class="form-control"
+    [(ngModel)]="searchByType">
+  <input type="text" style="width: 100px;" placeholder="Name" name="search" class="form-control"
+    [(ngModel)]="searchByName">
+  <input type="text" style="width: 100px;" placeholder="Number" name="search" class="form-control"
+    [(ngModel)]="searchByNumber">
+  <input type="text" style="width: 100px;" placeholder="Request Id" name="search" class="form-control"
+    [(ngModel)]="searchById">
+    <input type="datetime-local" style="width: 200px;" placeholder="Date" [(ngModel)]="searchByDate" name="search" class="form-control">
+  <input type="submit" value="Search" class="btn btn-primary">
+  <button class="btn btn-danger" type="button" (click)="resetForm(searchForm)">Reset</button>
+</form>
+
+<div class="table-responsive mt-3">
+  <table class="table table-hover">
+    <thead class="thead-dark">
+      <tr>
+        <th scope="col">RequestId</th>
+        <th scope="col">UserName</th>
+        <th scope="col">UserNumber</th>
+        <th scope="col">PickUpTime</th>
+        <th scope="col">PickUpAddress</th>
+        <th scope="col">DropOffAddress</th>
+        <th scope="col">Type</th>
+        <th scope="col">Status</th>
+        <th scope="col">AssignDriver</th>
+        <th scope="col">CancelRequest</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let ride of createdRidesList" (click)="onRowClicked(ride)">
+        <th scope="row">{{ride._id}}</th>
+        <td>{{ride.uname}}</td>
+        <td>{{ ride.unumber }}</td>
+        <td>{{ride.rideDateTime}}</td>
+        <td>{{ride.source}}</td>
+        <td>{{ride.destination}}</td>
+        <td>{{ride.vtype}}</td>
+        <td>{{ ride.status }}</td>
+        <td style="text-align: center;">
+          <div style="display: flex; align-items: center;">
+            <h3 class="mx-2"
+              *ngIf="ride.status === 'Sending' || ride.status === 'Accepted' || ride.status === 'Arrived' || ride.status === 'Picked' || ride.status === 'Started'">
+              {{ ride.dname }}</h3>
+            <select
+              *ngIf="ride.status === 'Accepted' || ride.status === 'Arrived' || ride.status === 'Picked' || ride.status === 'Started'"
+              class="form-control bg-primary col-2" style="width: 100px; height: 50px;" 
+              (click)="$event.stopPropagation()" (change)="handleAction($event, ride)" name="status">
+              <option class="bg-white" value="" disabled selected>{{ride.status}}</option>
+              <option class="bg-white" value="Arrived">Arrived</option>
+              <option class="bg-white" value="Picked">Picked</option>
+              <option class="bg-white" value="Started">Started</option>
+              <option class="bg-white" value="Completed">Completed</option>
+            </select> 
+
+            <button *ngIf="ride.status === 'Pending' " type="button" class="btn btn-success"
+              (click)="assignDriver($event, ride)">Assign</button>
+            <button *ngIf="ride.status === 'Rejected' || ride.status==='Reassign'" type="button" class="btn btn-success"
+              (click)="assignDriver($event, ride)">Re-Assign</button>
+              <button *ngIf="ride.status==='Hold'" type="button" class="btn btn-success">Hold</button>
+          </div>
+        </td>
+
+        <td>
+          <button type="button" class="btn btn-danger" (click)="cancelRequest($event,ride._id)">Cancel</button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<div id="action_modal" class="modal fade custom-modal-width" tabindex="-1" #action_modal role="dialog">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header" id="title">
+        <h1 class="modal-title mx-auto">Details</h1>
+      </div>
+      <div class="modal-body">
+        <table class="table">
+          <thead>
+            <tr *ngIf="selectedRide">
+              <th>UProfile</th>
+              <th>Estimate Distance</th>
+              <th>Estimate Price</th>
+              <th>Estimate Fare</th>
+              <th>Source</th>
+              <th *ngIf="selectedRide.stopsInputs.length!==0">Stops</th>
+              <th>Destintion</th>
+              <th>Ride Time</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngIf="selectedRide && selectedRide.uprofile">
+              <img [src]="'http://localhost:8000/assets/uprofile/' + selectedRide.uprofile" alt="User Profile"
+                style="max-width: 100px; max-height: 100px;" class="img-thumbnail">
+              <td>{{selectedRide.estimateDistance}}</td>
+              <td>{{ selectedRide.estimateTime }}</td>
+              <td>{{ selectedRide.estimateFare}}</td>
+              <td>{{ selectedRide.source }}</td>
+              <td *ngIf="selectedRide.stopsInputs.length!==0">
+                <ul>
+                  <ng-container *ngFor="let stop of selectedRide.stopsInputs">
+                    <li *ngIf="stop.trim() !== ''">{{ stop }}</li>
+                  </ng-container>
+                </ul>
+              </td>
+              <td>{{ selectedRide.destination }}</td>
+              <td>{{ selectedRide.rideDateTime }}</td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="action_modal_assign" class="modal fade " tabindex="-1" #action_modal_assign role="dialog">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header" id="title">
+        <h1 class="modal-title mx-auto">Drivers Details</h1>
+      </div>
+      <div class="modal-body">
+        <table class="table">
+          <thead>
+            <tr *ngIf="availableDriversList">
+              <th>Name</th>
+              <th>Number</th>
+              <th>Email Address</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let driver of availableDriversList" (click)="onRowClickedDriver(driver)"
+              [class.selected-driver]="driver === selectedDriver">
+              <td>{{driver.dname}}</td>
+              <td>{{ driver.dnumber }}</td>
+              <td>{{ driver.demail}}</td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="modal-footer">
+
+          <button type="button" class="btn btn-success mx-auto" data-bs-dismiss="modal" (click)="assignSelecteDriver()" [disabled]="assignanyAvailableDriver">Assign
+            Selecetd Driver</button>
+          <button type="button" class="btn btn-success mx-auto" data-bs-dismiss="modal" (click)="assignAnyAvailableDriver()" [disabled]="!assignanyAvailableDriver">Assign Any Available
+            driver</button>
+          <button type="button" class="btn btn-danger mx-auto" data-bs-dismiss="modal" (click)="closeModal()">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,138 @@
+<div class="mt-3 mb-2 ml-4  d-flex">
+    <button type="button" class="btn btn-primary btn-lg mt-2" 
+     data-bs-toggle="modal" data-bs-target="#action_modal" style="height:fit-content">
+        <i class="fa fa-plus mr-2 fs-5"></i> Add Country
+    </button>
+
+    <h3 class=" d-inline flex-grow-1 text-center mr-5 fs-1">Country List</h3>
+    <form method="get" class="mt-2" action="/pricing/country/search" #searchForm="ngForm"
+        (ngSubmit)="onSearch(searchText)">
+        <input type="text" placeholder="Search by name" name="search" #searchText>
+        <input type="submit" value="Search" class="mr-2">
+    </form>
+</div>
+
+<div id="action_modal" class="modal" tabindex="-1" #action_modal role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form #countryForm="ngForm" (ngSubmit)="countryForm.form.valid && onSubmit(countryForm)"
+                 action="/vehicle/country" autocomplete="off" enctype="multipart/form-data">
+                <div class="modal-header" id="title">
+                    <h1 class="modal-title">Add Country</h1>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Select Country</label>
+                        <select name="selectedCountry" [(ngModel)]="form.selectedCountry" class="form-control" required
+                            (change)="onCountryChange()">
+                            <option value="" disabled selected>Select a Country</option>
+                            <option *ngFor="let country of countries" [value]="country">{{ country }}</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <b><label for="currency" class="form-label">Currency</label></b>
+                        <input type="text" class="form-control" id="currency" placeholder="Currency" required
+                            [(ngModel)]="form.currency" name="currency" readonly>
+                    </div>
+                    <div calss="mb-3">
+                        <b><label for="flagImage" class="form-label">Flag Image</label></b>
+                        <div *ngIf="form.flagUrl !== ''">
+                            <img id="flagImage" [src]="form.flagUrl" alt="Country Flag" height="70" width="70">
+                        </div>
+
+                    </div>
+                    <div class="mb-3">
+                        <b><label for="country_code" class="form-label">Country Code</label></b>
+                        <input type="text" class="form-control" id="country_code" placeholder="Country Code" required
+                            [(ngModel)]="form.country_code" name="country_code" readonly>
+                    </div>
+                    <div class="mb-3">
+                        <b><label for="country_calling_code" class="form-label">Country Calling Code</label></b>
+                        <input type="text" class="form-control" id="country_calling_code"
+                            placeholder="Country Calling Code" required [(ngModel)]="form.country_calling_code"
+                            name="country_calling_code" readonly>
+                    </div>
+                    <div class="mb-3">
+                        <b><label for="time_zone" class="form-label">Time Zone</label></b>
+                        <input type="text" class="form-control" id="time_zone" placeholder="Time Zone" required
+                            [(ngModel)]="form.time_zone" name="time_zone" readonly>
+                    </div>
+                    <div class="mb-3">
+                        <b><label for="population" class="form-label">Population</label></b>
+                        <input type="text" class="form-control" id="population" placeholder="Population"
+                            [(ngModel)]=form.population name="population" readonly>
+
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-success mr-2 "
+                            [disabled]="countryForm.form.status==='INVALID'" data-bs-dismiss="modal">Add</button>
+                        <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div *ngIf="errorMessage" class="alert alert-danger">
+    {{ errorMessage }}
+</div>
+<div class="mt-3" *ngIf="!searchdetails || searchdetails<=0">
+    <div *ngIf="successMessage" class="alert alert-success">
+        {{ successMessage }}
+    </div>
+    <div *ngIf="(searchMessage && searchdetails.length === 0) " class="alert alert-danger">
+        {{ searchMessage }}
+    </div>
+    <table class="table table-hover">
+        <tr>
+            <th>Country</th>
+            <th>Currency</th>
+            <th>Image</th>
+            <th>Country Code</th>
+            <th>Country Calling Code</th>
+            <th>Time Zone</th>
+            <th>Population</th>
+
+        </tr>
+        <tr *ngFor="let country of countryList">
+            <td>{{ country.country }}</td>
+            <td>{{ country.currency }}</td>
+            <td><img src="{{country.flagImage}}" height="70" width="70"></td>
+            <td style="text-align: center;">{{ country.countryCode }}</td>
+            <td style="text-align: center;">{{ country.countryCallingCode }}</td>
+            <td>{{ country.timeZone }}</td>
+            <td>{{country.population}}</td>
+
+        </tr>
+    </table>
+</div>
+
+<div *ngIf="searchdetails && searchdetails.length > 0">
+    <div *ngIf="successMessage" class="alert alert-success">
+        {{ successMessage }}
+    </div>
+    <div *ngIf="searchMessage && searchdetails.length === 0" class="alert alert-danger">
+        {{ searchMessage }}
+    </div>
+    <table class="table table-hover">
+        <tr>
+            <th>Country</th>
+            <th>Currency</th>
+            <th>Image</th>
+            <th>Country Code</th>
+            <th>Country Calling Code</th>
+            <th>Time Zone</th>
+            <th>Population</th>
+        </tr>
+        <tr *ngFor="let country of searchdetails">
+            <td>{{ country.country }}</td>
+            <td>{{ country.currency }}</td>
+            <td><img src="{{country.flagImage}}" height="70" width="70"></td>
+            <td>{{ country.countryCode }}</td>
+            <td>{{ country.countryCallingCode }}</td>
+            <td>{{ country.timeZone }}</td>
+            <td>{{country.population}}</td>
+        </tr>
+    </table>
+</div>

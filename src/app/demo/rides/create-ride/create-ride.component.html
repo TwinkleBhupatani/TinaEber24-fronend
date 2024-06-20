@@ -1,0 +1,190 @@
+<div>
+  <h1 style="text-align: center;">CREATE RIDE </h1>
+</div>
+<div *ngIf="message" class="alert alert-success">
+  {{message}}
+</div>
+
+<div *ngIf="errorMessage" class="alert alert-danger">
+  {{errorMessage}}
+</div>
+<div class="mt-4">
+  <form [formGroup]="createRideForm">
+    <div *ngIf="!isSource">
+      <div class="mb-3">
+        <label for="unumber" class="form-label"><b>Phone Number</b></label>
+        <div class="input-group">
+          <select class="form-control" id="countryCode" #selectedCountryCode required [disabled]="userDetails">
+            <option value="" disabled selected>Select a Country Code</option>
+            <option *ngFor="let code of countryCodes" [value]="code">{{ code }}</option>
+          </select>
+          <input type="text" class="form-control" id="dnumber" placeholder="Number" formControlName="unumber" required
+            pattern="^\d{10}$" minlength="10" maxlength="10">
+        </div>
+      </div>
+      <div *ngIf="createRideForm.get('unumber').hasError('required') && createRideForm.get('unumber').touched">
+        <small class="text-danger">Number is Required</small>
+      </div>
+      <div *ngIf="createRideForm.get('unumber').hasError('minlength') && createRideForm.get('unumber').touched"
+        class="text-danger">
+        <small> Phone Number must be at least 10 digits.</small>
+      </div>
+      <div *ngIf="createRideForm.get('unumber').hasError('maxlength') && createRideForm.get('unumber').touched"
+        class="text-danger">
+        <small>Phone Number must not exceed 10 digits.</small>
+      </div>
+      <div class="mb-3" *ngIf="!userDetails">
+        <button type="submit" class="btn btn-success btn btn-large w-100" [disabled]="createRideForm.invalid"
+          (click)="check()">
+          Check
+        </button>
+      </div>
+      <div class="mb-3">
+        <b><label for="uname" class="form-label">User Name</label></b>
+        <input type="text" class="form-control" id="uname" formControlName="uname">
+      </div>
+
+      <div class="mb-3">
+        <b><label for="uemail" class="form-label">User Email</label></b>
+        <input type="text" class="form-control" id="uemail" formControlName="uemail">
+      </div>
+
+      <div class="mb-3">
+        <label><b>Payment Method: </b></label>
+        <label class="mx-5">
+          <input type="radio" formControlName="option" value="cash"
+            [checked]="createRideForm.get('option').value === 'cash'"> Cash
+        </label>
+        <label class="mx-5" *ngIf="checkCard">
+          <input type="radio" formControlName="option" value="card"
+            [checked]="createRideForm.get('option').value === 'card'"> Card
+        </label>
+      </div>
+    </div>
+    <div class="mt-3" *ngIf="userDetails && !isSource " (click)="nextSource()">
+      <button type="submit" class="btn btn-success btn btn-large w-100">
+        Next
+      </button>
+    </div>
+    <div class="mt-3" *ngIf="userDetails && isSource " (click)="previousSource()">
+      <button type="submit" class="btn btn-success btn btn-large w-100">
+        Previous
+      </button>
+    </div>
+    <div *ngIf="userDetails">
+      <div class="mt-4" *ngIf="isSource ">
+        <label class="form-label"><b>Enter Source</b></label>
+        <button type="button" class="btn btn-primary ms-2 mb-2" style="height:fit-content" (click)="addType()"
+          [disabled]="!areSourceAndDestinationSet()">
+          <i class="fa fa-plus mr-2 fs-5"></i>Service Type
+        </button>
+        <input type="text" id="autocomplete-source" placeholder="Choose Start Location" name="source"
+          formControlName="source" class="form-control">
+      </div>
+      <div *ngIf="createRideForm.get('source').hasError('required') && createRideForm.get('source').touched"
+        class="text-danger">
+        <small>Source is required.</small>
+      </div>
+
+      <div class="mt-4" *ngIf="isSource">
+        <label class="form-label"><b>Enter Destination</b> </label>
+        <input type="text" id="autocomplete-destination" placeholder="Choose Destination Location" name="destination"
+          formControlName="destination" class="form-control">
+      </div>
+      <div *ngIf="createRideForm.get('destination').hasError('required') && createRideForm.get('destination').touched"
+        class="text-danger">
+        <small>Destination is required.</small>
+      </div>
+      <div class="mt-3 mb-3" *ngIf="!add && isSource" (click)="showStops()">
+        <button type="submit" class="btn btn-success" [disabled]="!areSourceAndDestinationSet()">
+          Add Stop
+        </button>
+      </div>
+      <div *ngIf="add && isSource" formArrayName="stopsInputs">
+        <div class="mt-3" *ngFor="let stop of stopsInputs.controls; let i = index">
+          <input type="text" [formControlName]="i" placeholder="Enter Stop {{ i + 1 }}" class="form-control stop-input"
+            id="autocomplete-stop-{{i}}">
+            <button type="button" (click)="removeStop(i)" class="btn btn-danger" [disabled]="stopsInputs.controls[i].value === ''">Remove</button>
+        </div>
+        
+      </div>
+      <div class="mb-3" *ngIf="isSource && estimateDistanceFormat && estimateTimeFormat">
+        <h3>Estimate Distance: {{estimateDistanceFormat}}</h3>
+        <h3>Estimate Time: {{estimateTimeFormat}}</h3>
+      </div>
+
+      <div calss="mt-3" *ngIf=" isSource " id="map" style="height: 500px; width: 1000px;">
+      </div>
+
+      <div *ngIf="isSource" class="mb-3">
+        <label for="option" class="form-label"><b>Choose Booking Option:</b></label>
+        <div class="form-check">
+          <input type="radio" id="nowOption" formControlName="bookingOption" value="now" class="form-check-input"
+            [checked]="createRideForm.get('bookingOption').value === 'now'">
+          <label for="nowOption" class="form-check-label">Book NOW</label>
+        </div>
+        <div class="form-check">
+          <input type="radio" id="scheduleOption" formControlName="bookingOption" value="schedule"
+            class="form-check-input" [checked]="createRideForm.get('bookingOption').value === 'schedule'">
+          <label for="scheduleOption" class="form-check-label">Schedule</label>
+        </div>
+
+      </div>
+
+      <div class="mt-3" *ngIf="createRideForm.get('bookingOption').value === 'schedule' && isSource">
+        <label for="rideDateTime" class="form-label"><b>Choose Ride Date and Time:</b></label>
+        <input type="datetime-local" id="rideDateTime" formControlName="rideDateTime" class="form-control">
+        <div
+          *ngIf="createRideForm.get('rideDateTime').hasError('required') && createRideForm.get('rideDateTime').touched"
+          class="text-danger">
+          <small>Date Time is required.</small>
+        </div>
+        <div class="mt-3" *ngIf="createRideForm.get('rideDateTime').hasError('pastDate') && createRideForm.get('rideDateTime').touched && errorMessage" class="alert alert-danger">
+          {{errorMessage}}
+        </div>
+      </div>
+      <div class="mt-3" *ngIf=" isSource" (click)="book()">
+        <button type="submit" class="btn btn-success" [disabled]="createRideForm.invalid">
+          Book Ride
+        </button>
+      </div>
+    </div>
+  </form>
+
+</div>
+
+<div id="action_modal" class="modal" tabindex="-1" #action_modal role="dialog">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+
+      <div class="modal-header" id="title">
+        <h1 class="modal-title">Service Types</h1>
+      </div>
+      <div class="modal-body">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Types</th>
+              <th>Base Price</th>
+              <th>Distance Price</th>
+              <th>Time Price</th>
+              <th>Estimate Fare</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let type of types" (click)="onRowClicked(type)" [class.selected-row]="selectedType === type.type">
+              <td>{{ type.type }}</td>
+              <td>{{ type.calculatedBasePrice }}</td>
+              <td>{{ type.calculatedDistancePrice }}</td>
+              <td>{{ type.calculatedTimePrice }}</td>
+              <td>{{ type.calculatedFee }}</td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

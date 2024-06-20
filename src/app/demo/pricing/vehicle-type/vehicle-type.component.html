@@ -1,0 +1,65 @@
+  <div> <h1 style="text-align: center;">VEHICLE TYPE </h1></div>
+  <div class="mt-4">
+    <form enctype="multipart/form-data" #vehicleTypes="ngForm" (ngSubmit)=" vehicleTypes.form.valid && addVehicleType()">
+
+      <div class="mb-3">
+        <b><label for="vicon" class="form-label">Vehicle Icon</label></b>
+        <input type="file" class="form-control" id="vicon" name="vicon" 
+        ngModel #vicon="ngModel"
+               (change)="onFileChange($event)" >
+               
+               <div *ngIf="vicon.errors && vicon.touched ">
+                <small class="text-danger">Vehicle Icon is Required</small>
+              </div>
+
+              <!-- <div *ngIf="selectedVehicle.vicon && isEdit">
+                <p class="mt-2"><b>Selected Image Name:</b> {{ selectedVehicle.vicon.split('/').pop() }}</p>
+              </div> -->
+
+              <div *ngIf="form.vicon && form.vicon.size > maxSizeInBytes" class="text-danger">
+                   <small> File size exceeds the allowed limit (1 MB).</small>
+                </div>
+                
+      </div>
+      
+      <div class="mb-3" *ngIf="selectedImage">
+        <img [src]="selectedImage" alt="Selected Image" style="max-width: 200px; max-height: 200px;">
+      </div>
+
+      <div class="mb-3">
+          <b><label for="vtype" class="form-label">Vehicle Type</label></b>
+          <input type="text" class="form-control" id="vtype" placeholder="Vehicle Type" [(ngModel)]="form.vtype" name="vtype" #vtype="ngModel" 
+          required [ngClass]="{error: vtype.errors && vtype.touched}">
+          <div *ngIf="vtype.errors && vtype.touched">
+              <small class="text-danger">Vehicle Type is Required</small>
+          </div>
+
+      </div>
+      <div class="mb-3" *ngIf="isEdit">
+          <button type="submit" class="btn btn-success" [disabled]="vehicleTypes.form.status==='INVALID'">
+            Edit</button>
+      </div>
+      <div class="mb-3" *ngIf="!isEdit">
+        <button type="submit" class="btn btn-success" [disabled]="vehicleTypes.form.status==='INVALID'">
+          Add</button>
+    </div>
+    </form>
+
+    <div class="mt-3">
+          <h2 style="text-align: center;">Vehicle Type List</h2>
+          <table class="table table-hover">
+            <caption></caption>
+              <tr>
+                  <th>Icon</th>
+                  <th>Type</th> 
+                  <th>Edit</th>
+              </tr>
+              <tr *ngFor="let vehicle of vehicleList">
+                <img [src]="'http://localhost:8000/assets/vIcon/' + vehicle.vicon" alt="Vehicle Image" style="max-width: 80px; max-height: 80px;"
+                class="img-thumbnail">
+                <td>{{ vehicle.vtype }}</td>
+                <td><a (click)="editVehicle(vehicle)"> <i class="fa fa-edit mr-2 fs-3" style="color:green"></i></a></td>             
+              </tr>
+            </table>
+    </div>
+  </div>

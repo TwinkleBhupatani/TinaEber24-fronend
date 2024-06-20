@@ -1,0 +1,100 @@
+
+
+<div> <h1 style="text-align: center;">SETTINGS </h1></div>
+<div *ngIf="successMessage" class="alert alert-success">
+{{successMessage}}
+</div>
+<div class="mt-4">
+  <form [formGroup]="settingsForm" (ngSubmit)="set()">
+   
+    <div class="mb-3">
+        <label class="form-label">Accept Request</label>
+        <select name="seconds"  formControlName="seconds" class="form-control" required >
+            <option value="" disabled selected>Select a seconds</option>
+            <option *ngFor="let second of secondsList" [value]="second">
+                {{ second }}
+              </option> 
+        </select>
+      </div>
+      <div *ngIf="settingsForm.get('seconds').hasError('required') && settingsForm.get('seconds').touched">
+        <small class="text-danger">Seconds is Required</small>
+    </div>
+
+    <div class="mt-4">
+        <label class="form-label">Number of Stops </label>
+        <select name="stops"  formControlName="stops" class="form-control" required >
+            <option value="" disabled selected>Select a stops</option>
+            <option *ngFor="let stop of stopsList" [value]="stop">
+                {{ stop }}
+              </option> 
+        </select>
+      </div>
+      <div *ngIf="settingsForm.get('seconds').hasError('required') && settingsForm.get('seconds').touched">
+        <small class="text-danger">Seconds is Required</small>
+    </div>
+   
+
+  <div class="mt-4">
+      <label class="form-label">Enter Email Address for Email</label>
+      <input type="text" id="email" placeholder="Email" name="email" formControlName="email" class="form-control" required>
+  </div>
+  <div *ngIf="settingsForm.get('email').hasError('required') && settingsForm.get('email').touched">
+      <small class="text-danger">Email is Required</small>
+  </div>
+
+  <div class="mt-4">
+    <label class="form-label">Enter Password for Email</label>
+    <input type="text" id="password" placeholder="password" name="password" formControlName="password" class="form-control" required>
+</div>
+<div *ngIf="settingsForm.get('password').hasError('required') && settingsForm.get('password').touched">
+    <small class="text-danger">Password is Required</small>
+</div>
+
+<div class="mt-4">
+  <label class="form-label">Enter Sid for SMS</label>
+  <input type="text" id="sid" placeholder="sid" name="sid" formControlName="sid" class="form-control" required>
+</div>
+<div *ngIf="settingsForm.get('sid').hasError('required') && settingsForm.get('sid').touched">
+  <small class="text-danger">Sid is Required</small>
+</div>
+
+<div class="mt-4">
+  <label class="form-label">Enter Auth Token for SMS</label>
+  <input type="text" id="authToken" placeholder="authToken" name="authToken" formControlName="authToken" class="form-control" required>
+</div>
+<div *ngIf="settingsForm.get('authToken').hasError('required') && settingsForm.get('authToken').touched">
+  <small class="text-danger">Auth Token is Required</small>
+</div>
+
+<div class="mt-4">
+  <label class="form-label">Enter Number for SMS</label>
+  <input type="text" id="number" placeholder="number" name="number" formControlName="number" class="form-control" required>
+</div>
+<div *ngIf="settingsForm.get('number').hasError('required') && settingsForm.get('number').touched">
+  <small class="text-danger">Number is Required</small>
+</div>
+
+<div class="mt-4">
+  <label class="form-label">Enter Publish Key for Stripe</label>
+  <input type="text" id="pkey" placeholder="pkey" name="pkey" formControlName="pkey" class="form-control" required>
+</div>
+<div *ngIf="settingsForm.get('pkey').hasError('required') && settingsForm.get('pkey').touched">
+  <small class="text-danger">Publish Key is Required</small>
+</div>
+
+<div class="mt-4">
+  <label class="form-label">Enter Secret Key for Stripe</label>
+  <input type="text" id="skey" placeholder="skey" name="skey" formControlName="skey" class="form-control" required>
+</div>
+<div *ngIf="settingsForm.get('skey').hasError('required') && settingsForm.get('skey').touched">
+  <small class="text-danger">Secret Key is Required</small>
+</div>
+    <div class="mt-4" >
+        <button type="submit" class="btn btn-success" [disabled]="settingsForm.invalid">
+            Add
+          </button>
+  </div>
+  </form>
+</div>
+
+

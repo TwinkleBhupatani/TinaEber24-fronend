@@ -1,0 +1,213 @@
+<div >
+  <h1 style="text-align: center;" >Drivers </h1>
+</div>
+<form (submit)="addBankAccount()">
+  <label for="accountNumber">Account Number</label>
+  <input type="text" id="accountNumber" name="accountNumber" [(ngModel)]="accountNumber">
+  <br>
+  <label for="routingNumber">Routing Number</label>
+  <input type="text" id="routingNumber" name="routingNumber" [(ngModel)]="routingNumber">
+  <br>
+  <label for="accountHolderName">Account Holder Name</label>
+  <input type="text" id="accountHolderName" name="accountHolderName" [(ngModel)]="accountHolderName">
+  <br>
+  <button type="submit">Add Bank Account</button>
+</form>
+<div *ngIf="message" class="alert alert-success">
+  {{message}}
+</div>
+
+<div class="mt-4">
+  <form enctype="multipart/form-data" #drivers="ngForm" (ngSubmit)=" drivers.form.valid && addDriver()">
+      <div class="mb-3">
+        <b><label for="dprofile" class="form-label">Driver Profile</label></b>
+        <input type="file" class="form-control" id="dprofile" name="dprofile" ngModel #dprofile="ngModel"
+          (change)="onFileChange($event)" >
+      </div>
+      <small *ngIf="fileSizeMessage" class="text-danger">
+        {{fileSizeMessage}}
+      </small>
+      <small *ngIf="dprofile.errors && (dprofile.dirty || dprofile.touched)">
+          <small *ngIf="dprofile.errors['required']" class="text-danger">
+            Image is required.
+          </small>
+        </small>
+      <div class="mb-3">
+      <b><label for="dname" class="form-label">Driver Name</label></b>
+      <input type="text" class="form-control" id="dname" placeholder="Name" [(ngModel)]="form.dname" name="dname"
+        #dname="ngModel" required>
+    </div>
+    <small *ngIf="dname.errors && (dname.dirty || dname.touched)">
+      <small *ngIf="dname.errors['required']" class="text-danger">
+        Name is required.
+      </small>
+    </small>
+    <div class="mb-3">
+      <b><label for="demail" class="form-label">Driver Email</label></b>
+      <input type="email" class="form-control" id="demail" placeholder="Email" [(ngModel)]="form.demail" name="demail"
+        #demail="ngModel" required (focus)="clearErrors()" email required>
+    </div>
+    <small *ngIf="emailExists" class="text-danger">{{emailExists}}</small>
+    <small *ngIf="demail.errors && (demail.dirty || demail.touched)">
+      <small *ngIf="demail.errors['required']" class="text-danger">
+        Email is required.
+      </small>
+      <small *ngIf="demail.errors['email']" class="text-danger">
+        Invalid email format.
+      </small>
+    </small>
+
+    <div class="mb-3">
+      <label for="dnumber" class="form-label">Phone Number</label>
+      <div class="input-group">
+        <select class="form-control" id="countryCode" [(ngModel)]="selectedCountryCode" name="countryCode" (change)="onCountryCodeChange()" required>
+          <option *ngIf="!isEdit" value="" disabled selected>Select a Country Code</option>
+          <option *ngIf="isEdit" value=""  selected [value]="selectedCountryCode">{{selectedCountryCode}}</option>
+          <option *ngFor="let code of countryCodes" [value]="code">{{ code }}</option>
+        </select>
+        <input type="text" class="form-control" id="dnumber" placeholder="Number" [(ngModel)]="form.dnumber"
+          name="dnumber" #dnumber="ngModel" required (focus)="clearErrors()"  pattern="^\d{10}$">
+      </div>
+    </div>
+    <small *ngIf="dnumber.errors && (dnumber.dirty || dnumber.touched)">
+      <small *ngIf="dnumber.errors['required']" class="text-danger">
+        Number is required.
+      </small>
+      <small *ngIf="dnumber.errors['pattern']" class="text-danger">
+        Invalid Phone  Number format.
+      </small>
+    </small> 
+    <small *ngIf="numberExists !== '' && numberExists" class="text-danger">{{numberExists}}</small>
+    
+    <div class="mb-3">
+      <label for="dcity" class="form-label">Driver City</label>
+      <div class="input-group">
+        <select class="form-control" id="dcity" [(ngModel)]="form.dcity" name="dcity" #dcity="ngModel" #selectedCity (focus)="clearErrors()"  (change)="onCityChange()"
+        required>
+          <option *ngIf="!isEdit" value="" disabled selected>Select a City </option>
+          <option *ngIf="isEdit" selected disabled [value]="form.dcity">{{form.dcity}}</option>
+          <option *ngFor="let city of cityList" [value]="city.city">{{ city.city }}</option>
+        </select>
+    </div>
+    </div>
+    <small *ngIf="dcity.errors && (dcity.dirty || dcity.touched)">
+      <small *ngIf="dcity.errors['required']" class="text-danger">
+        City is required.
+      </small>
+    </small>
+    
+    <div class="mb-3" *ngIf="isEdit">
+      <button type="submit" class="btn btn-success" [disabled]="drivers.form.status==='INVALID'">
+        Edit</button>
+    </div>
+    <div class="mb-3" *ngIf="!isEdit">
+      <button type="submit" class="btn btn-success" [disabled]="drivers.form.status==='INVALID'">
+        Add</button>
+    </div>
+  </form>
+</div>
+  <div class="row ">
+    <form method="get" class="mt-2 col-10 d-flex" #searchForm="ngForm" (ngSubmit)="onSearch(searchText)">
+      <input type="text" style="width: 300px;" placeholder="Search by Name, Email, Number,City" name="search"  [(ngModel)]="searchText" class="form-control">
+      <input type="submit" value="Search" class="btn btn-primary">
+      <button  class="btn btn-danger" type="button" (click)="resetForm(searchForm)">Reset</button>
+    </form>
+    <form class="mt-2 col-10 d-flex"  #resetSortForm="ngForm" >
+    <select class="form-control bg-primary col-2 " style="width: 150px;height :45px;" [(ngModel)]="sortText" (change)="handleSort($event)" name="sort">
+      <option class="bg-white" value="" disabled selected>Sort</option>
+      <option class="bg-white" value="dname">Name</option>
+      <option class="bg-white" value="demail">Email</option>
+      <option class="bg-white" value="dnumber">Number</option>
+      <option class="bg-white" value="dcity">City</option>
+    </select>
+    <button  class="btn btn-danger" type="button" (click)="resetSort(resetSortForm)">Reset</button>
+  </form>
+  </div>
+  
+<div class="alert alert-danger mt-2" *ngIf="searchMessage">
+{{searchMessage}}</div>
+
+  <div class="mt-3">
+    <h2 style="text-align: center;">Drivers List</h2>
+    <table class="table table-hover">
+      <caption></caption>
+      <tr>
+        <th>Profile</th>
+        <th>Name</th>
+        <th>Email</th>
+        <th>Number</th>
+        <th>City</th>
+        <th>Status</th>
+        <th colspan="2">Operations</th>
+      </tr>
+      <tr *ngFor="let driver of DriversList; let i = index">
+        <img [src]="'http://localhost:8000/assets/dprofile/' + driver.dprofile" alt="Driver Profile"
+          style="max-width: 100px; max-height: 100px;" class="img-thumbnail">
+        <td>{{ driver.dname }}</td>
+        <td>{{ driver.demail }}</td>
+        <td>{{driver.dnumber }}</td>
+        <td>{{driver.dcity }}</td>
+        <td *ngIf="driver.approved">
+          <button  class="btn btn-success" (click)="toggleApproval(driver._id)">
+            {{ getStatus(driver._id) }}
+          </button>            
+        </td>
+        <td *ngIf="!driver.approved">
+          <button  class="btn btn-danger" (click)="toggleApproval(driver._id)">
+            {{ getStatus(driver._id) }}
+          </button>            
+        </td>
+        <td>
+          <select class="form-control bg-primary" #actionSelect (change)="handleAction(driver, $event,i)">
+            <option class="bg-white" value="" disabled selected>Actions</option>
+            <option class="bg-white" value="edit">Edit</option>
+            <option class="bg-white" value="delete">Delete</option>
+            <option class="bg-white" value="assign">Assign Vehicle</option>
+          </select>
+        </td>
+      </tr>
+    </table>
+    <div class="row"  *ngIf="DriversList.length > 0">
+  <div class="col-5">
+    <button class="btn btn-success w-auto" (click)="prevPage()" [disabled]="currentPage <= 1">Previous</button>
+  </div>
+  <span class="col-2">Page {{currentPage}} of {{totalPages}}</span>
+  <div class="col-5 text-end">
+    <button class="btn btn-success w-auto" (click)="nextPage()" [disabled]="currentPage >= totalPages">Next</button>
+  </div>
+</div>
+  </div>
+
+
+<div id="action_modal" class="modal" tabindex="-1" #action_modal role="dialog">
+  <div class="modal-dialog">
+      <div class="modal-content">
+          <form #typeForm="ngForm" 
+               autocomplete="off" enctype="multipart/form-data">
+              <div class="modal-header" id="title">
+                  <h1 class="modal-title">Add Service Type</h1>
+              </div>
+              <div class="modal-body">
+                  <div class="mb-3">
+                      <label class="form-label">Select Type</label>
+                      <select name="selectedType" [(ngModel)]="selectedType"name="type" #type="ngModel" class="form-control" required>
+                        <option *ngIf="assignedVehicleName.length===0" value="" disabled selected>Select a Type</option>
+                        <option *ngIf="assignedVehicleName" [ngValue]="assignedVehicleName" disabled selected>{{assignedVehicleName}}</option>
+                        <option *ngFor="let type of priceSetVtype" [ngValue]="type">{{ type }}</option>
+                      </select>     
+                  </div>
+                  <div class="modal-footer">
+                    <div class="mt-2">
+                      <button type="submit" class="btn btn-success"   [disabled]="typeForm.form.status==='INVALID'" 
+                      data-bs-dismiss="modal" (click)="onSubmit(typeForm)">
+                        Assign Service Type
+                      </button>
+                    </div>
+                      <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+                  </div>
+              </div>
+          </form>
+      </div>
+  </div>
+</div>
+

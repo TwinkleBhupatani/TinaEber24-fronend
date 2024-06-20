@@ -1,0 +1,27 @@
+<div class="ms-auto">
+ 
+      <div class="dropdown pc-h-item header-user-profile" ngbDropdown>
+        <a
+          class="pc-head-link head-link-primary dropdown-toggle arrow-none me-0"
+          data-bs-toggle="dropdown"
+          href="javascript:"
+          ngbDropdownToggle
+        >
+          <img src="assets/images/Profile.png" alt="user-image" class="user-avtar" height="30" width="70" />
+          <span>
+            <i class="ti ti-settings"></i>
+          </span>
+        </a>
+        <div class="dropdown-menu dropdown-user-profile dropdown-menu-end pc-h-dropdown" ngbDropdownMenu>
+          <div class="dropdown-header">
+            <h4> Good Morning, <span class="small text-muted"> Twinkle </span> </h4>
+            <p class="text-muted">Project Admin</p> 
+            <hr />
+            <a (click)="logout()" >
+              <i class="ti ti-logout"></i>
+              <span>Logout</span>
+            </a>
+          </div>
+        </div>
+ 
+</div>

@@ -1,0 +1,23 @@
+<table class="table table-hover text-center" *ngIf="selectedDriversList">
+    <thead>
+      <tr >
+        <th>Request Id</th>
+        <th>Name</th>
+        <th>Number</th>
+        <th>Email Address</th>
+        <th>Accept Request within</th>
+        <th colspan="2">Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let driver of selectedDriversList">
+        <td>{{ driver._id}}</td>
+        <td>{{driver.dname}}</td>
+        <td>{{ driver.dnumber }}</td>
+        <td>{{ driver.demail}}</td>
+        <td >{{seconds}}</td>
+        <td><button class="btn btn-success" (click)="requestAccepted(driver)">Accept</button></td>
+        <td><button class="btn btn-danger" (click)="rejectDriver(driver)">Reject</button></td>
+      </tr> 
+    </tbody>
+  </table>
