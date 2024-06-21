@@ -102,7 +102,7 @@
           <th colspan="2">Operations</th>
         </tr>
         <tr *ngFor="let user of UsersList; let i= index">
-          <img [src]="'http://localhost:8000/assets/uprofile/' + user.uprofile" alt="User Profile"
+          <img [src]="'http://16.171.129.7:4000/assets/uprofile/' + user.uprofile" alt="User Profile"
             style="max-width: 100px; max-height: 100px;" class="img-thumbnail">
           <td>{{ user.uname }}</td>
           <td>{{ user.uemail }}</td>

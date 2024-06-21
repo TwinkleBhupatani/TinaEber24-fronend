@@ -141,7 +141,7 @@
         <th colspan="2">Operations</th>
       </tr>
       <tr *ngFor="let driver of DriversList; let i = index">
-        <img [src]="'http://localhost:8000/assets/dprofile/' + driver.dprofile" alt="Driver Profile"
+        <img [src]="'http://16.171.129.7:4000/assets/dprofile/' + driver.dprofile" alt="Driver Profile"
           style="max-width: 100px; max-height: 100px;" class="img-thumbnail">
         <td>{{ driver.dname }}</td>
         <td>{{ driver.demail }}</td>

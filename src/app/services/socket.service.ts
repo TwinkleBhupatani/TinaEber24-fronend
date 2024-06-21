@@ -15,7 +15,7 @@
      
     }
     createSocket(): void {
-      this.socket = io('http://localhost:8000');
+      this.socket = io('http://16.171.129.7:4000');
       
       this.socket.on('connect', () => {
         console.log('Socket connected!');   

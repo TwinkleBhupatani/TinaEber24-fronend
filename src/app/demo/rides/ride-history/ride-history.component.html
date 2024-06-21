@@ -81,7 +81,7 @@
             </thead>
             <tbody>
               <tr *ngIf="selectedRide && selectedRide.uprofile">
-                <img [src]="'http://localhost:8000/assets/uprofile/' + selectedRide.uprofile" alt="User Profile"
+                <img [src]="'http://16.171.129.7:4000/assets/uprofile/' + selectedRide.uprofile" alt="User Profile"
                   style="max-width: 100px; max-height: 100px;" class="img-thumbnail">
                 <td>{{selectedRide.estimateDistance}}</td>
                 <td>{{ selectedRide.estimateTime }}</td>

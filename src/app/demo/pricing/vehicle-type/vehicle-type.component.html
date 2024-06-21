@@ -55,7 +55,7 @@
                   <th>Edit</th>
               </tr>
               <tr *ngFor="let vehicle of vehicleList">
-                <img [src]="'http://localhost:8000/assets/vIcon/' + vehicle.vicon" alt="Vehicle Image" style="max-width: 80px; max-height: 80px;"
+                <img [src]="'http://16.171.129.7:4000/assets/vIcon/' + vehicle.vicon" alt="Vehicle Image" style="max-width: 80px; max-height: 80px;"
                 class="img-thumbnail">
                 <td>{{ vehicle.vtype }}</td>
                 <td><a (click)="editVehicle(vehicle)"> <i class="fa fa-edit mr-2 fs-3" style="color:green"></i></a></td>             

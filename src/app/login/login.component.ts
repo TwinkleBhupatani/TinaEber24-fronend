@@ -23,6 +23,7 @@ export class LoginComponent {
       if (event.key === 'isLoggedIn' && event.newValue === 'true') {
         this.router.navigate(['/default']);
       }
+     
     });
   }
 

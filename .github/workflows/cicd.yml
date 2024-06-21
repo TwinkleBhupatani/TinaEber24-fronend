@@ -1,0 +1,36 @@
+name: Deploy Angular Application
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+      - name: Check Docker daemon status
+        run: docker info
+      - name: Login to Docker Hub
+        run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+      - name: Build docker image
+        run: docker build -t twinklebhuptani/tina-eber-frontend .
+      - name: Publish image to docker hub
+        run: docker push twinklebhuptani/tina-eber-frontend:latest
+  
+  deploy:
+    needs: build
+    runs-on: self-hosted
+    steps:
+      - name: Add user to docker group
+        run: sudo usermod -aG docker $USER
+      - name: Set Docker socket permissions
+        run: sudo chmod 666 /var/run/docker.sock
+      - name: Pull image from Docker Hub
+        run:  docker pull twinklebhuptani/tina-eber-frontend:latest
+      - name: Delete Old Conatiner
+        run: docker rm -f frontend-app-container
+      - name: Run Docker container
+        run: docker run -d -t -p 4200:80 --name frontend-app-container twinklebhuptani/tina-eber-backend
