@@ -29,8 +29,8 @@ jobs:
       - name: Set Docker socket permissions
         run: sudo chmod 666 /var/run/docker.sock
       - name: Pull image from Docker Hub
-        run:  docker pull twinklebhuptani/tina-eber-frontend:latest
-      - name: Delete Old Conatiner
+        run: docker pull twinklebhuptani/tina-eber-frontend:latest
+      - name: Delete old container
         run: docker rm -f frontend-app-container
       - name: Run Docker container
-        run: docker run -d -t -p 4200:80 --name frontend-app-container twinklebhuptani/tina-eber-backend
+        run: docker run -d -t -p 4200:80 --name frontend-app-container twinklebhuptani/tina-eber-frontend
