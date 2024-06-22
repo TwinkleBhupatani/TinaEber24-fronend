@@ -18,7 +18,7 @@ FROM nginx:alpine
 RUN rm -rf /usr/share/nginx/html/*
 
 # Copy built Angular app from Stage 1
-COPY --from=build /usr/src/app/dist/Frontend /usr/share/nginx/html
+COPY --from=build /usr/src/app/dist /usr/share/nginx/html
 
 # Expose port 80 to the outside world
 EXPOSE 80
