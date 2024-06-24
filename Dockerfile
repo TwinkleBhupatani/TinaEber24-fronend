@@ -19,9 +19,16 @@ RUN rm -rf /usr/share/nginx/html/*
 
 # Copy built Angular app from Stage 1
 COPY --from=build /usr/src/app/dist /usr/share/nginx/html
-COPY default.conf /etc/nginx/conf.d/
+RUN echo "server { \
+    listen 80; \
+    location / { \
+        root /usr/share/nginx/html; \
+        index index.html index.htm; \
+        try_files \$uri \$uri/ /index.html; \
+    } \
+}" > /etc/nginx/conf.d/default.conf
 # Expose port 80 to the outside world
 EXPOSE 80
 
 # Command to run nginx in the foreground
-CMD ["nginx", "-g", "daemon off;"]
+CMD ["nginx", "-g", "daemon off;", "-c", "/etc/nginx/nginx.conf"]
