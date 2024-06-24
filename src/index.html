@@ -12,7 +12,7 @@
       const apiKeyPromise = fetch('http://16.171.129.7:4000/api/getApiKey')
           .then(response => response.json())
           .then(data => data.apiKey);
-  console.log()
+
       apiKeyPromise.then(apiKey => {
           const script = document.createElement('script');
           script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&libraries=places,drawing,geometry`;

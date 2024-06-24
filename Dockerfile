@@ -12,7 +12,7 @@ COPY . .
 RUN npm run build --prod
 
 # Stage 2: Serve Angular Application with Nginx
-FROM nginx:alpine
+FROM nginx:1.27-alpine
 
 # Remove default nginx website
 RUN rm -rf /usr/share/nginx/html/*
