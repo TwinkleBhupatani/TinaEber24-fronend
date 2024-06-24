@@ -12,24 +12,10 @@ COPY . .
 RUN npm run build --prod
 
 # Stage 2: Serve Angular Application with Nginx
-FROM nginx:1.27.0-alpine
-
-# Remove default nginx website
-RUN rm -rf /usr/share/nginx/html/*
+FROM node
+WORKDIR /usr/src/app
 
 # Copy built Angular app from Stage 1
-COPY --from=build /usr/src/app/dist /usr/share/nginx/html
-
-
-# RUN echo "server { \
-#         listen 80; \
-#         location / { \
-#             try_files $uri $uri/ /index.html; \
-#         } \
-#     }" > /etc/nginx/conf.d/default.conf
-
-# Expose port 80 to the outside world
-EXPOSE 80
-
-# Command to run nginx in the foreground
-CMD ["nginx", "-g", "daemon off;"]
+COPY --from=build /usr/src/app/dist /usr/src/app/dist
+EXPOSE 4200
+CMD ["npm", "start"]
