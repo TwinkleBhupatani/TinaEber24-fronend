@@ -21,13 +21,13 @@ RUN rm -rf /usr/share/nginx/html/*
 COPY --from=build /usr/src/app/dist /usr/share/nginx/html
 
 
-RUN echo "server { \
-        listen 80; \
-        location / { \
-            try_files $uri $uri/ /index.html; \
-        } \
-    }" > /etc/nginx/conf.d/default.conf
-    
+# RUN echo "server { \
+#         listen 80; \
+#         location / { \
+#             try_files $uri $uri/ /index.html; \
+#         } \
+#     }" > /etc/nginx/conf.d/default.conf
+
 # Expose port 80 to the outside world
 EXPOSE 80
 
